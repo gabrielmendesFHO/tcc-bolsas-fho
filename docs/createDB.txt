@@ -1,0 +1,63 @@
+-- Criação do banco de dados do sistema VOCR'S
+CREATE DATABASE IF NOT EXISTS vocrs_db;
+USE vocrs_db;
+
+-- 1. Tabela de Candidatos
+CREATE TABLE candidatos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_completo VARCHAR(255) NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- 2. Tabela de Processos de Bolsas
+CREATE TABLE processos_bolsas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    data_inicio DATE NOT NULL,
+    data_fim DATE NOT NULL,
+    ativo BOOLEAN DEFAULT TRUE
+);
+
+-- 3. Tabela de Inscrições
+CREATE TABLE inscricoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    candidato_id INT NOT NULL,
+    processo_id INT NOT NULL,
+    status_geral ENUM('Pendente', 'Em Auditoria', 'Aprovado', 'Rejeitado') DEFAULT 'Pendente',
+    FOREIGN KEY (candidato_id) REFERENCES candidatos(id) ON DELETE CASCADE,
+    FOREIGN KEY (processo_id) REFERENCES processos_bolsas(id) ON DELETE CASCADE
+);
+
+-- 4. Tabela de Membros da Família (Para o cálculo Per Capita)
+CREATE TABLE membros_familia (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    inscricao_id INT NOT NULL,
+    nome_completo VARCHAR(255) NOT NULL,
+    parentesco VARCHAR(50) NOT NULL,
+    cpf VARCHAR(14),
+    data_nascimento DATE,
+    profissao VARCHAR(100),
+    renda_validada DECIMAL(10,2) DEFAULT 0.00,
+    FOREIGN KEY (inscricao_id) REFERENCES inscricoes(id) ON DELETE CASCADE
+);
+
+-- 5. Tabela de Documentos
+CREATE TABLE documentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    membro_id INT NOT NULL,
+    caminho_arquivo VARCHAR(500) NOT NULL,
+    tipo_documento VARCHAR(50) NOT NULL,
+    status_processamento ENUM('Aguardando', 'Processado', 'Erro') DEFAULT 'Aguardando',
+    FOREIGN KEY (membro_id) REFERENCES membros_familia(id) ON DELETE CASCADE
+);
+
+-- 6. Tabela de Análises OCR (A integração com a IA)
+CREATE TABLE analises_ocr (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    documento_id INT NOT NULL UNIQUE,
+    dados_extraidos JSON,
+    taxa_confianca DECIMAL(5,2),
+    status_auditoria ENUM('IA apenas', 'Validado pelo Humano', 'Corrigido') DEFAULT 'IA apenas',
+    FOREIGN KEY (documento_id) REFERENCES documentos(id) ON DELETE CASCADE
+);
