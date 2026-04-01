@@ -28,3 +28,6 @@ Este sistema automatiza a triagem de documentos socioeconômicos (holerites, com
 - Gabriel Fernando Mendes
 - Tiago Pereira Remedio
 - Camilo Cesar Perucci
+
+
+![Dashboard](./docs/screenshots/tela2.png)
