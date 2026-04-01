@@ -30,4 +30,4 @@ Este sistema automatiza a triagem de documentos socioeconômicos (holerites, com
 - Camilo Cesar Perucci
 
 
-![Dashboard](./docs/screenshots/tela2.jpg)
+![Tela Login](./docs/screenshots/telaLogin.png)
